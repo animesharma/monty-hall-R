@@ -47,25 +47,57 @@ montyHallSimulator <- function (doors, doorSwitched, runs) {
     }
   }
   # Return the updated value of the counts list
-  return(counts)
+  probabilities <- list(
+    counts$winSwitch / runs,
+    counts$winNoSwitch / runs,
+    counts$loseSwitch / runs,
+    counts$loseNoSwitch / runs
+  )
+  return(probabilities)
 }
 
 # Initialize list of doors and number of runs for the simulation
 doors <- list(0, 1, 2)
 runs = 100000
-# Run Monty Hall simulation where player switches choice midway
-switchResult <- montyHallSimulator(doors, TRUE, runs)
-# Run Monty Hall simulation where player stays with initial choice
-noSwitchResult <- montyHallSimulator(doors, FALSE, runs)
+iterations = 10
 
-switchResultWinPercentage <- switchResult$winSwitch * 100 / runs
-switchResultLosePercentage <- switchResult$loseSwitch * 100 / runs
+# Run Monty Hall simulation.
+switchRes <- vector()
+noSwitchRes <- vector()
+for(i in 1:iterations) {
+  # switchRes holds the result for the case when the player switches midway
+  switchRes <- append(switchRes, 
+                      montyHallSimulator(doors, TRUE, runs))
+  # noSwitchRes holds the result for the case when the player doesn't switch
+  noSwitchRes <- append(noSwitchRes, 
+                        montyHallSimulator(doors, FALSE, runs))
+}
 
-noSwitchResultWinPercentage <- noSwitchResult$winNoSwitch * 100 / runs
-noSwitchResultLosePercentage <- noSwitchResult$loseNoSwitch * 100 / runs
+# Plot a box plot for the aggregated data (Work in progress)
+tempWinSwitch <- vector()
+tempLoseSwitch <- vector()
+i <- 1
+while(i <= length(switchRes)) {
+  tempWinSwitch <- append(tempWinSwitch, switchRes[i])
+  tempLoseSwitch <- append(tempLoseSwitch, switchRes[i + 2])
+  i = i + 4
+}
 
-print(switchResultWinPercentage)
-print(switchResultLosePercentage)
-print(noSwitchResultWinPercentage)
-print(noSwitchResultLosePercentage)
+tempWinNoSwitch <- vector()
+tempLoseNoSwitch <- vector()
+i <- 1
+while(i <= length(noSwitchRes)) {
+  tempWinNoSwitch <- append(tempWinNoSwitch, noSwitchRes[i + 1])
+  tempLoseNoSwitch <- append(tempLoseNoSwitch, noSwitchRes[i + 3])
+  i = i + 4
+}
+
+switch <- data.frame(tempWinSwitch, tempLoseSwitch)
+noSwitch <- data.frame(tempWinNoSwitch, tempLoseNoSwitch)
+
+head(switch)
+print(noSwitch)
+
+boxplot(switch)
+boxplot(noSwitch)
 
