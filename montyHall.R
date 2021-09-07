@@ -47,7 +47,7 @@ montyHallSimulator <- function (doors, doorSwitched, runs) {
     }
   }
   # Return the updated value of the counts list
-  probabilities <- list(
+  probabilities <- data.frame(
     counts$winSwitch / runs,
     counts$winNoSwitch / runs,
     counts$loseSwitch / runs,
@@ -58,8 +58,48 @@ montyHallSimulator <- function (doors, doorSwitched, runs) {
 
 # Initialize list of doors and number of runs for the simulation
 doors <- list(0, 1, 2)
-runs = 10000
+runs = 1000
 iterations = 1000
+
+# Run Monty Hall simulation
+switchRes <- vector()
+noSwitchRes <- vector()
+for (i in 1:runs) {
+  # switchRes holds the result for the case when the player switches midway
+  switchRes <- append(switchRes,
+                      montyHallSimulator(doors, TRUE, i)$counts.winSwitch)
+  # noSwitchRes holds the result for the case when the player doesn't switch
+  noSwitchRes <- append(noSwitchRes,
+                        montyHallSimulator(doors, FALSE, i)$counts.winNoSwitch)
+}
+
+# Plot the Probability of Winning After Switching Doors
+plot(
+  1:runs,
+  switchRes,
+  type = 'l',
+  main = 'Probability of Winning After Switching Doors',
+  xlab = 'Runs',
+  ylab = 'Probability'
+)
+abline(h = 2 / 3,
+       col = 'red',
+       lw = '2',
+       lty = 2)
+
+# Plot the Probability of Winning Without Switching Doors
+plot(
+  1:runs,
+  noSwitchRes,
+  type = 'l',
+  main = 'Probability of Winning Without Switching Doors',
+  xlab = 'Runs',
+  ylab = 'Probability'
+)
+abline(h = 1 / 3,
+       col = 'red',
+       lw = '2',
+       lty = 2)
 
 # Run Monty Hall simulation.
 switchRes <- vector()
@@ -97,35 +137,36 @@ switch <- data.frame("Winning" = unlist(tempWinSwitch),
                      "Losing" = unlist(tempLoseSwitch))
 noSwitch <- data.frame("Winning" = unlist(tempWinNoSwitch),
                        "Losing" = unlist(tempLoseNoSwitch))
-# Plot the Probability of winning after switching doors
+# Plot the Probability of Winning After Switching Doors
 boxplot(
   switch$Winning,
-  main = "Probability of winning after switching doors",
-  xlab = "Winning with switching (1000 iterations)",
+  main = "Probability of Winning After Switching Doors",
+  xlab = "Winning With Switching (1000 runs, 1000 iterations)",
   ylab = "Probability",
   col = "orange"
 )
-# Plot the Probability of losing after switching the door mid-way
+# Plot the Probability of Losing After Switching Doors
 boxplot(
   switch$Losing,
-  main = "Probability of losing after switching doors",
-  xlab = "Losing with switching (1000 iterations)",
+  main = "Probability of Losing After Switching Doors",
+  xlab = "Losing With Switching (1000 runs, 1000 iterations)",
   ylab = "Probability",
   col = "orange"
 )
-# Plot the Probability of winning without switching the door
+# Plot the Probability of Winning Without Switching Doors
 boxplot(
   noSwitch$Winning,
-  main = "Probability of winning without switching doors",
-  xlab = "Winning without switching (1000 iterations)",
+  main = "Probability of Winning Without Switching Doors",
+  xlab = "Winning Without Switching (1000 runs, 1000 iterations)",
   ylab = "Probability",
   col = "orange"
 )
-# Plot the Probability of losing without switching the door
+# Plot the Probability of Losing Without Switching Doors
 boxplot(
   noSwitch$Losing,
-  main = "Probability of losing without switching doors",
-  xlab = "Losing without switching (1000 iterations)",
+  main = "Probability of Losing Without Switching Doors",
+  xlab = "Losing Without Switching (1000 runs, 1000 iterations)",
   ylab = "Probability",
   col = "orange"
 )
+
